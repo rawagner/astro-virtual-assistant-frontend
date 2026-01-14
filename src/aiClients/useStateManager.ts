@@ -22,7 +22,7 @@ function useAsyncManagers(): StateManagerConfiguration<IAIClient>[] | undefined 
       module: './useVaChatbot',
     });
     addHook({
-      scope: 'assistedInstallerApp',
+      scope: 'assistedInstallerUiChatbot',
       module: './useAsyncChatbot',
     });
     return cleanup;

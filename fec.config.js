@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyPlugin = require("copy-webpack-plugin");
 
 const extraExposes = {};
 
@@ -9,7 +10,23 @@ const getRoutes = () => {
     };
   }
 
-  return undefined;
+  return [
+    {
+      context: ['/apps/assisted-installer-ui-chatbot'],
+      target: 'http://localhost:7003',
+      changeOrigin: true,
+      secure: false,
+    },
+    {
+      context: ['/api/chrome-service/v1/static/fed-modules-generated.json'],
+      target: 'https://prod.foo.redhat.com:1337', // Point to the base domain/port
+      pathRewrite: {
+        '^/api/chrome-service/v1/static/fed-modules-generated.json': '/apps/virtual-assistant/fed-modules-generated.json'
+      },
+      changeOrigin: true,
+      secure: false,
+    },
+  ];
 };
 
 module.exports = {
@@ -39,7 +56,16 @@ module.exports = {
       ...extraExposes,
     },
   },
-  plugins: [],
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "fed-modules-generated.json"),
+          to: "fed-modules-generated.json",
+        },
+      ],
+    }),
+  ],
   sassPrefix: '.virtualAssistant',
   hotReload: process.env.HOT === 'true',
 };
